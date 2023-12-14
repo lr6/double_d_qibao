@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build"
   },
   "dependencies": {
     "ag-grid-community": "^31.0.0",
@@ -13,7 +13,9 @@
     "antd": "^5.12.1",
     "axios": "^1.6.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.0",
+    "x2js": "^3.4.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
