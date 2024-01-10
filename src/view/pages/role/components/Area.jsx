@@ -1,16 +1,18 @@
-import api from "@/api/index.js"
 import { useState, useEffect } from 'react'
+import { useServeStore } from '@/store/serve.js'
+import api from "@/api/index.js"
 
 import { Select } from 'antd'
 
 let serverList = []
 
 function Area() {
-  console.log('render area')
+  const serveCode = useServeStore((state) => state.serveCode)
+  const setServeCode = useServeStore((state) => state.setServeCode)
+
   const [areaList, setAreaList] = useState([])
   const [gameList, setGameList] = useState([])
   const [areaVal, setAreaVal] = useState('')
-  const [gameVal, setGameVal] = useState('')
 
   async function getList() {
     const params = { r: Math.random() }
@@ -24,7 +26,7 @@ function Area() {
     setAreaVal(v => value)
   }
   const onGameChange = (value) => {
-    setGameVal(v => value)
+    setServeCode(value)
   }
 
   useEffect(() => {
@@ -32,13 +34,11 @@ function Area() {
   }, [])
 
   useEffect(() => {
-    console.log('areaVal 更新了', areaVal)
     setGameList(v => serverList.filter(v => v.AreaCode == areaVal))
   }, [areaVal])
 
   useEffect(() => {
-    console.log('gameList 更新了', gameList)
-    setGameVal(v => gameList[0] ? gameList[0].ServerCode : '')
+    setServeCode(gameList[0] ? gameList[0].ServerCode : '')
   }, [gameList])
 
   return (
@@ -56,7 +56,7 @@ function Area() {
 
         <Select
           showSearch
-          value={gameVal}
+          value={serveCode}
           style={{width: 150}}
           optionFilterProp="label"
           fieldNames={{ label: 'ServerName', value: 'ServerCode' }}

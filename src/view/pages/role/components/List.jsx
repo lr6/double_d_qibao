@@ -1,6 +1,7 @@
 import api from "@/api/index.js"
 import { useState, useMemo } from 'react'
 import x2js from 'x2js'
+import { useServeStore } from '@/store/serve.js'
 
 import { Button } from 'antd'
 import {AgGridReact} from 'ag-grid-react'
@@ -12,7 +13,7 @@ import { wudaoMap, menpaiMap } from "@/config/config.js"
 const xmlParser = new x2js()
 
 function List() {
-  console.log('render List')
+  const serveCode = useServeStore((state) => state.serveCode)
 
   const detailRender = (data) => {
     return <Button type="primary" onClick={ () => { getDetail(data.value) } }>详情</Button>
@@ -23,7 +24,7 @@ function List() {
    }
    const [err, res] = await api.getRoleDetail(id, params)
    const detailData = xmlParser.xml2js(res)
-   console.log(detailData)
+   console.log('role', detailData)
   }
   const [rowData, setRowData] = useState([])
   const [colDefs, setColDefs] = useState([
@@ -35,8 +36,9 @@ function List() {
     { headerName: "悟道", field: 'wudao', width: 100  },
     { headerName: "浮生", field: 'fusheng', width: 200  },
     { headerName: "道行", field: 'daohang', width: 200  },
+    { headerName: "倍道", field: 'daohang_calc', width: 100  },
     { headerName: "战力", field: 'zhanli', width: 100  },
-    { headerName: "详情", field: 'id', width: 100, cellRenderer: detailRender },
+    { headerName: "详情", field: 'id', width: 100, pinned: 'right', cellRenderer: detailRender },
   ])
 
   async function init() {
@@ -66,7 +68,7 @@ function List() {
       maxTaoStandardMagnification:'',
       huashenFushengluName:'',
       HuashenFushenglu: '不限',
-      serverId: 37,
+      serverId: serveCode,
       r: Math.random(),
       time:'',
       orderState:'',
@@ -84,10 +86,11 @@ function List() {
     if(res.Data.length) {
       res.Data.forEach(v => {
         const {
-          ItemName, ItemLevel, ItemTypeId, CurrentItemPrice, ItemInfoCode,
+          ItemName, ItemLevel, ItemTypeId, CurrentItemPrice, ItemInfoCode, TaoStandardMagnification,
           WudaoStage, TaoHtmlHelper, ZhanLiLvName, HuashenFushengluList = []
         } = v
-        const fushengText = HuashenFushengluList ? `共${HuashenFushengluList.length}个五星` : '没有五星'
+        // const fushengText = HuashenFushengluList ? `共${HuashenFushengluList.length}个五星` : '没有五星'
+        const fushengText = HuashenFushengluList ? HuashenFushengluList.length: 0
         const obj = {
           name: ItemName,
           level: ItemLevel,
@@ -97,6 +100,7 @@ function List() {
           wudao: wudaoMap[WudaoStage],
           fusheng: fushengText,
           daohang: TaoHtmlHelper,
+          daohang_calc: TaoStandardMagnification,
           zhanli: ZhanLiLvName,
           id: ItemInfoCode
         }
